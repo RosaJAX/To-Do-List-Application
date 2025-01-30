@@ -3,7 +3,6 @@ from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
-from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__, static_folder='static')
 app.config["SECRET_KEY"] = "your_secret_key"
@@ -73,6 +72,18 @@ def add_task():
     task['user_id'] = ObjectId(current_user.id)
     result = mongo.db.tasks.insert_one(task)
     return jsonify({"_id": str(result.inserted_id)}), 201
+
+@app.route('/tasks/<task_id>', methods=['PUT'])
+@login_required
+def update_task(task_id):
+    task = request.json
+    result = mongo.db.tasks.update_one(
+        {"_id": ObjectId(task_id), "user_id": ObjectId(current_user.id)},
+        {"$set": {"name": task['name']}}
+    )
+    if result.modified_count:
+        return jsonify({"message": "Task updated"}), 200
+    return jsonify({"message": "Task not found"}), 404
 
 @app.route('/tasks/<task_id>', methods=['DELETE'])
 @login_required
