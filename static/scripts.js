@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const taskForm = document.getElementById("task-form");
     const taskInput = document.getElementById("task-input");
-    const taskList = document.getElementById("task-list");
+    const taskTable = document.getElementById("task-table").getElementsByTagName('tbody')[0];
 
     taskForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -15,22 +15,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ name: taskName })
             });
             const newTask = await response.json();
-            const li = document.createElement("li");
-            li.setAttribute("data-id", newTask._id);
-            li.innerHTML = `${taskName} <button class="delete-btn">Delete</button>`;
-            taskList.appendChild(li);
+            const row = taskTable.insertRow();
+            row.setAttribute("data-id", newTask._id);
+            row.innerHTML = `<td>${taskName}</td><td><button class="delete-btn">Delete</button></td>`;
+            row.querySelector('.delete-btn').addEventListener('click', async function() {
+                await fetch(`/tasks/${newTask._id}`, {
+                    method: "DELETE"
+                });
+                taskTable.deleteRow(row.rowIndex);
+            });
             taskInput.value = "";
         }
     });
 
-    taskList.addEventListener("click", async (e) => {
-        if (e.target.classList.contains("delete-btn")) {
-            const li = e.target.closest("li");
-            const taskId = li.getAttribute("data-id");
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', async function() {
+            const row = button.closest('tr');
+            const taskId = row.getAttribute('data-id');
             await fetch(`/tasks/${taskId}`, {
                 method: "DELETE"
             });
-            li.remove();
-        }
+            row.remove();
+        });
     });
 });

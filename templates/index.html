@@ -6,13 +6,21 @@
     <input type="text" id="task-input" placeholder="Add a new task" required>
     <button type="submit">Add Task</button>
 </form>
-<ul id="task-list">
-    {% for task in tasks %}
-    <li data-id="{{ task._id }}">
-        {{ task.name }}
-        <button class="delete-btn">Delete</button>
-    </li>
-    {% endfor %}
-</ul>
+<table id="task-table">
+    <thead>
+        <tr>
+            <th>Task</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr data-id="{{ task._id }}">
+            <td>{{ task.name }}</td>
+            <td><button class="delete-btn">Delete</button></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 {% endblock %}
