@@ -10,14 +10,17 @@
     <thead>
         <tr>
             <th>Task</th>
-            <th>Action</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for task in tasks %}
         <tr data-id="{{ task._id }}">
             <td>{{ task.name }}</td>
-            <td><button class="delete-btn">Delete</button></td>
+            <td>
+                <button class="edit-btn">Edit</button>
+                <button class="delete-btn">Delete</button>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
